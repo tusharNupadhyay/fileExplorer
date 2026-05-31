@@ -1,0 +1,99 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: 0;
+}
+
+html,
+body {
+  height: 100vh;
+}
+.container {
+  display: flex;
+  height: 100vh;
+  color: rgb(225, 225, 225);
+}
+.sidebar {
+  width: 280px;
+  background-color: #252526;
+  flex-shrink: 0;
+}
+.mainContent {
+  flex: 1;
+  overflow: auto;
+  background-color: #1e1e1e;
+}
+.sidebarContent {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-direction: column;
+  padding: 5px;
+}
+.fileButtons {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  border-bottom: solid 1px #9a9a9a;
+}
+.fileButtons button {
+  appearance: none;
+  background: none;
+  border: none;
+  color: white;
+  background-color: rgb(27, 119, 206);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.fileButtons button:active {
+  transform: scale(0.97);
+}
+.folder {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 4px 8px;
+  font-size: 18px;
+  gap: 5px;
+}
+.fileStructure {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  gap: 6px;
+  margin-left: 5px;
+}
+.createInput {
+  outline: none;
+  background: none;
+  appearance: none;
+  padding: 6px 8px;
+  font-size: 16px;
+  color: white;
+  border-radius: 5px;
+  border: 1px solid #d1d5db;
+  font-size: 16px;
+  color: white;
+}
+.fileNames {
+  padding: 4px 2px;
+}
+:hover.fileNames {
+  cursor: pointer;
+  background-color: #555657;
+}
+.folderFileNames {
+  padding: 1px;
+  cursor: pointer;
+  width: 100%;
+}
+:hover.folderFileNames {
+  background-color: #555657;
+}
+.selectedFolder {
+  background-color: #6c6c6c;
+}

@@ -1,6 +1,7 @@
 function AddNode(node, parentId, newNode) {
   //when parentnode is found update it and return;
   if (node.id === parentId) {
+    if (!node.isFolder) return node; //do nothing if its a file
     return {
       ...node,
       children: [...node.children, newNode],

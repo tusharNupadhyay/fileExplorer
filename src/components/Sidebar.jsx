@@ -4,23 +4,26 @@ import { useEffect } from "react";
 import initialFileSystem from "../data.js";
 import FileTree from "./FileTree.jsx";
 import addNewNode from "./AddNode.js";
+import renameNode from "./renameNode.js";
+import deleteNode from "./deleteNode.js";
 
-function Sidebar() {
-  const [showInput, setShowInput] = useState(false);
+function Sidebar({ setSelectedFile }) {
+  const [inputMode, setInputMode] = useState(null);
   const [fileSystem, setFileSystem] = useState(initialFileSystem);
-  const [selectedFolder, setSelectedFolder] = useState(1);
+  const [selectedFolder, setSelectedFolder] = useState(1); //only selects folders not files
+  const [renamingNodeId, setRenamingNodeId] = useState(null); //selects both folders and files
+
   const nextId = useRef(5);
   const inputRef = useRef(null);
-  const isCreatingFile = useRef(false);
 
   useEffect(() => {
-    if (showInput && inputRef.current) inputRef.current.focus();
-  }, [showInput]);
+    if (inputMode && inputRef.current) inputRef.current.focus();
+  }, [inputMode]);
 
   useEffect(() => {
     function handleClickOutside(e) {
       if (inputRef.current && !inputRef.current.contains(e.target)) {
-        setShowInput(false);
+        setInputMode(null);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -29,52 +32,63 @@ function Sidebar() {
     };
   }, []);
 
+  function handleDelete(targetId) {
+    setFileSystem((prev) => deleteNode(prev, targetId));
+    if (selectedFolder === targetId) setSelectedFolder(0);
+    console.log("selected file/folder has been deleted");
+  }
+
   function handleKeyDown(e) {
     if (e.key === "Enter") {
       const name = e.target.value;
       if (!name.trim()) return;
-      let newNode;
-      if (isCreatingFile.current) {
-        newNode = {
-          id: nextId.current++,
-          name,
-          isFolder: false,
-        };
+
+      if (inputMode === "rename") {
+        setFileSystem((prev) => renameNode(prev, renamingNodeId, name));
+        setRenamingNodeId(null);
       } else {
-        newNode = {
-          id: nextId.current++,
-          name,
-          isFolder: true,
-          children: [],
-        };
+        let newNode;
+        if (inputMode === "createFile") {
+          newNode = {
+            id: nextId.current++,
+            name,
+            isFolder: false,
+          };
+        } else if (inputMode === "createFolder") {
+          newNode = {
+            id: nextId.current++,
+            name,
+            isFolder: true,
+            children: [],
+          };
+        }
+        setFileSystem((prev) => addNewNode(prev, selectedFolder, newNode));
       }
-      setFileSystem((prev) => addNewNode(prev, selectedFolder, newNode));
 
       e.target.value = "";
-      setShowInput(false);
+      setInputMode(null);
     }
     if (e.key === "Escape") {
       e.target.value = "";
-      setShowInput(false);
+      setInputMode(null);
+      setRenamingNodeId(null);
     }
   }
   return (
     <div className="sidebarContent">
       <div className="fileButtons">
         <button
-          disabled={showInput}
+          disabled={inputMode}
           onClick={() => {
-            isCreatingFile.current = true;
-            setShowInput(true);
+            setInputMode("createFile");
           }}
         >
           create file
         </button>
         <button
-          disabled={showInput}
+          disabled={inputMode}
           onClick={() => {
-            isCreatingFile.current = false;
-            setShowInput(true);
+            setInputMode("createFolder");
           }}
         >
           create folder
@@ -86,8 +100,13 @@ function Sidebar() {
           selectedFolder={selectedFolder}
           setSelectedFolder={setSelectedFolder}
           inputRef={inputRef}
-          showInput={showInput}
           handleKeyDown={handleKeyDown}
+          inputMode={inputMode}
+          setInputMode={setInputMode}
+          setRenamingNodeId={setRenamingNodeId}
+          renamingNodeId={renamingNodeId}
+          handleDelete={handleDelete}
+          setSelectedFile={setSelectedFile}
         />
       </div>
     </div>
